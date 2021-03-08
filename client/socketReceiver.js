@@ -11,17 +11,16 @@ socket.on('players', (data) => {
     if(playerBodys[playerID] == undefined) {
       let geometry = new THREE.BoxGeometry(1, 1, 2)
       let material = new THREE.MeshStandardMaterial({ color: 'rgb(0,255,0)' })
-      cube = new THREE.Mesh(geometry, material)
-      cube.rotation.order = "ZYX"
-      scene.add(cube)
-      playerBodys[playerID] = cube
+      let body = new THREE.Mesh(geometry, material)
+      body.rotation.order = "ZYX"
+      scene.add(body)
+      playerBodys[playerID] = body
 
       // create new gun model
       let gun = guns[player.holding].clone()
       gun.scale.x = 1.5
       gun.scale.y = 1.5
       gun.scale.z = 1.5
-      cube.rotation.order = "ZYX"
       gun.rotation.x = Math.PI/2
       scene.add(gun)
       gunBodys[playerID] = gun
@@ -51,4 +50,22 @@ socket.on('players', (data) => {
       camera.position.z = player.position.z + 1
     }
   }
+})
+
+let bullets = []
+socket.on('bullet', (bullet) => {
+  let geometry = new THREE.BoxGeometry(0.2, 1, 0.2)
+  let material = new THREE.MeshStandardMaterial({ color: 'rgb(255,255,0)' })
+  let bulletBody = new THREE.Mesh(geometry, material)
+  bulletBody.rotation.order = "ZYX"
+  scene.add(bulletBody)
+  bulletBody.position.x = bullet.position.x
+  bulletBody.position.y = bullet.position.y
+  bulletBody.position.z = bullet.position.z
+  console.log(bullet.velocity)
+
+  bulletBody.rotation.z = bullet.velocity.z
+  bulletBody.rotation.y = bullet.velocity.y
+  bulletBody.rotation.x = bullet.velocity.x
+  bullets.push({body: bulletBody, velocity: bullet.velocity})
 })

@@ -1,3 +1,4 @@
+const Vector = require('./vector.js')
 
 class SocketHandler {
   constructor(world) {
@@ -18,7 +19,6 @@ class SocketHandler {
   }
   sendData() {
     this.sendPlayersData()
-    this.sendBullets()
   }
   movement(data, socket) {
     this.players[socket.id].position.x += data.x
@@ -30,14 +30,14 @@ class SocketHandler {
     this.players[socket.id].rotation.y = data.y
   }
   shoot(data, socket) {
-    bullets.push({
-      position: this.players[socket.id].position
-    })
-    socket.emit('shootconfirm')
-  }
-  sendBullets() {
-    // send to everyone
-    for(let socketID in this.players) this.players[socketID].socket.emit('bullets', this.bullets)
+    let player = this.players[socket.id]
+    let playerRotation = new Vector(player.rotation.x, player.rotation.y, 0)
+    let bullet = {
+      position: player.position,
+      velocity: new Vector(0.1, 0.1, 0).rotate('all', playerRotation)
+    }
+    this.bullets.push(bullet)
+    socket.emit('bullet', bullet)
   }
   sendPlayersData() {
     let data = {}

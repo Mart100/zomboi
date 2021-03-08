@@ -20,4 +20,9 @@ function tick() {
   }
   if(me.position.z > 2) movement.z -= 0.05
   socket.emit('movement', movement.object())
+  for(let bullet of bullets) {
+    bullet.body.position.x += bullet.velocity.x
+    bullet.body.position.y += bullet.velocity.y
+    bullet.body.position.z += bullet.velocity.z
+  }
 }
